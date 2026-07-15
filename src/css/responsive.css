@@ -1,0 +1,103 @@
+/* --- ADAPTACIÓN MÓVIL --- */
+@media (max-width: 640px) {
+  body {
+    height: 100dvh;
+  }
+
+  #palette-wrapper {
+    top: 64px;
+    bottom: 70px;
+  }
+
+  header {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    padding: 6px;
+    gap: 4px;
+    border-radius: 16px;
+    align-items: center;
+  }
+  .pill-text {
+    padding: 6px 8px;
+    font-size: 11px;
+    gap: 4px;
+  }
+  .pill-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .logo-style {
+    font-size: 14px;
+  }
+  .slogan-style {
+    display: none;
+  }
+  .logo-wrapper {
+    padding-left: 6px;
+  }
+  .alpha-pill {
+    left: 6px;
+  }
+  .pr-2 {
+    padding-right: 6px;
+  }
+
+  footer {
+    bottom: 8px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: calc(100vw - 16px);
+    padding: 6px;
+    gap: 4px;
+    border-radius: 16px;
+  }
+  #mode-wrapper .pill-text {
+    min-width: 0;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  #gen-bar {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .global-edit-panel {
+    bottom: 70px;
+    left: 8px;
+    right: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    max-height: 60vh;
+    width: calc(100% - 16px);
+  }
+  .preview-box {
+    height: 60px !important;
+    width: 60px !important;
+  }
+
+  #toasts {
+    bottom: 80px;
+    right: 16px;
+    left: auto;
+    align-items: flex-end;
+  }
+  .toast-item {
+    width: auto;
+    max-width: calc(100% - 32px);
+    justify-content: flex-start;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .modal-tabs .tab-btn {
+    font-size: 12px;
+    padding: 8px 2px;
+  }
+  .modal-body {
+    padding: 16px;
+    font-size: 13px;
+  }
+}

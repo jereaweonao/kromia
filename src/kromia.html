@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>kromia.</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://file.garden/Z2Jpu_foVFPx7B9-/kromia.png"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
+    <link rel="stylesheet" type="text/css" href="./css/responsive.css" />
+  </head>
+  <body class="dark-mode select-none">
+    <!-- HEADER -->
+    <header
+      class="fixed top-4 left-4 right-4 z-50 flex flex-nowrap items-center justify-between gap-2 p-2 rounded-2xl sm:rounded-full"
+      style="
+        background: var(--bg);
+        border: 1px solid var(--ui-border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      "
+    >
+      <div class="logo-wrapper min-w-0">
+        <div class="logo-row">
+          <span class="logo-style text-xl">kromia.</span>
+          <span class="slogan-style hidden md:inline" data-i18n="slogan"
+            >gratis, para siempre.</span
+          >
+        </div>
+        <span class="alpha-pill">alpha</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button class="pill-text" onclick="openModal('why')">
+          <iconify-icon
+            icon="lucide:help-circle"
+            width="14"
+            draggable="false"
+          ></iconify-icon>
+          <span class="hidden lg:inline" data-i18n="whyBtn">Sobre kromia.</span>
+        </button>
+        <button class="pill-text" onclick="openModal('donate')">
+          <iconify-icon
+            icon="lucide:heart"
+            width="14"
+            draggable="false"
+          ></iconify-icon>
+          <span class="hidden lg:inline" data-i18n="donateBtn">Apoyar</span>
+        </button>
+        <button class="pill-text" onclick="openModal('credits')">
+          <iconify-icon
+            icon="lucide:info"
+            width="14"
+            draggable="false"
+          ></iconify-icon>
+          <span class="hidden lg:inline" data-i18n="creditsBtn">Créditos</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2 pr-2 flex-shrink-0">
+        <div class="custom-select">
+          <button id="export-btn" class="pill-btn" title="Exportar">
+            <iconify-icon
+              icon="lucide:download"
+              width="18"
+              draggable="false"
+            ></iconify-icon>
+          </button>
+          <div id="export-menu" class="dropdown-menu"></div>
+        </div>
+        <button id="theme-toggle" class="pill-btn" title="Cambiar tema">
+          <iconify-icon
+            id="theme-icon"
+            icon="lucide:sun"
+            width="18"
+            draggable="false"
+          ></iconify-icon>
+        </button>
+
+        <div class="custom-select" id="lang-wrapper">
+          <button class="pill-text" onclick="toggleMenu('lang-menu')">
+            <span id="lang-text">ES</span>
+            <iconify-icon
+              icon="lucide:chevron-down"
+              width="14"
+              draggable="false"
+            ></iconify-icon>
+          </button>
+          <div class="dropdown-menu" id="lang-menu">
+            <div
+              class="dropdown-item active"
+              data-lang="es"
+              onclick="changeLang('es')"
+            >
+              Español
+            </div>
+            <div
+              class="dropdown-item"
+              data-lang="en"
+              onclick="changeLang('en')"
+            >
+              English
+            </div>
+            <div
+              class="dropdown-item"
+              data-lang="pt"
+              onclick="changeLang('pt')"
+            >
+              Português
+            </div>
+            <div
+              class="dropdown-item"
+              data-lang="fr"
+              onclick="changeLang('fr')"
+            >
+              Français
+            </div>
+            <div
+              class="dropdown-item"
+              data-lang="de"
+              onclick="changeLang('de')"
+            >
+              Deutsch
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PALETA -->
+    <main id="palette-wrapper">
+      <div id="palette"></div>
+    </main>
+
+    <!-- TOASTS -->
+    <div
+      id="toasts"
+      class="fixed bottom-24 right-6 z-[90] flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <!-- PANEL DE EDICIÓN GLOBAL COMPACTO -->
+    <div id="global-edit-panel" class="global-edit-panel"></div>
+
+    <!-- FOOTER -->
+    <footer
+      class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-nowrap items-center justify-center gap-2 p-2 rounded-2xl sm:rounded-full max-w-[calc(100vw-2rem)]"
+      style="
+        background: var(--bg);
+        border: 1px solid var(--ui-border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      "
+    >
+      <div class="custom-select" id="mode-wrapper">
+        <button
+          class="pill-text"
+          onclick="toggleMenu('mode-menu')"
+          style="min-width: 0; justify-content: space-between"
+        >
+          <span id="mode-text">Al azar</span>
+          <iconify-icon
+            icon="lucide:chevron-up"
+            width="14"
+            draggable="false"
+          ></iconify-icon>
+        </button>
+        <div class="dropdown-menu" id="mode-menu" style="min-width: 180px">
+          <div
+            class="dropdown-item active"
+            data-mode="random"
+            onclick="changeMode('random')"
+          >
+            Al azar
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="analogous"
+            onclick="changeMode('analogous')"
+          >
+            Análogos
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="monochrome"
+            onclick="changeMode('monochrome')"
+          >
+            Monocromáticos
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="complementary"
+            onclick="changeMode('complementary')"
+          >
+            Complementarios
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="pastel"
+            onclick="changeMode('pastel')"
+          >
+            Tonos pastel
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="vivid"
+            onclick="changeMode('vivid')"
+          >
+            Saturados
+          </div>
+          <div
+            class="dropdown-item"
+            data-mode="expand"
+            onclick="changeMode('expand')"
+          >
+            Gama de tonos
+          </div>
+        </div>
+      </div>
+
+      <button
+        id="gen-bar"
+        class="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium text-xs sm:text-sm text-white whitespace-nowrap"
+        style="background: var(--accent)"
+      >
+        <iconify-icon
+          icon="lucide:refresh-cw"
+          width="16"
+          draggable="false"
+        ></iconify-icon>
+        <span data-i18n="generateBtn">Generar</span>
+        <span class="hidden sm:inline" data-i18n="generateHint">(Espacio)</span>
+      </button>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="info-modal" class="modal-overlay hidden">
+      <div class="modal-panel">
+        <div class="modal-header">
+          <button onclick="closeModal()" class="modal-close-btn">
+            <iconify-icon
+              icon="lucide:x"
+              width="16"
+              draggable="false"
+            ></iconify-icon>
+          </button>
+          <div class="modal-tabs">
+            <button
+              class="tab-btn active"
+              data-tab="why"
+              onclick="switchTab('why')"
+              data-i18n="whyBtn"
+            >
+              Sobre kromia.
+            </button>
+            <button
+              class="tab-btn"
+              data-tab="donate"
+              onclick="switchTab('donate')"
+              data-i18n="donateBtn"
+            >
+              Apoyar
+            </button>
+            <button
+              class="tab-btn"
+              data-tab="credits"
+              onclick="switchTab('credits')"
+              data-i18n="creditsBtn"
+            >
+              Créditos
+            </button>
+            <div class="tab-indicator"></div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div id="tab-why" class="tab-content">
+            <h2
+              class="text-xl font-bold mb-3"
+              style="color: var(--text)"
+              data-i18n="whyTitle"
+            ></h2>
+            <p class="mb-4" data-i18n="whyIntro"></p>
+            <ul class="list-disc pl-5 space-y-2 mb-4" id="why-points"></ul>
+            <h3
+              class="text-lg font-bold mt-4 mb-2"
+              style="color: var(--text)"
+              data-i18n="whyOutroTitle"
+            ></h3>
+            <p data-i18n="whyOutroText"></p>
+          </div>
+          <div id="tab-donate" class="tab-content hidden">
+            <h2
+              class="text-xl font-bold mb-3"
+              style="color: var(--text)"
+              data-i18n="donateTitle"
+            ></h2>
+            <p class="mb-3" data-i18n="donateText"></p>
+            <p data-i18n="donateText2"></p>
+          </div>
+          <div id="tab-credits" class="tab-content hidden">
+            <h2
+              class="text-xl font-bold mb-3"
+              style="color: var(--text)"
+              data-i18n="creditsTitle"
+            ></h2>
+            <p class="mb-4" data-i18n="creditsText"></p>
+            <div class="grid grid-cols-2 gap-3">
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:package"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                Tailwind CSS
+              </div>
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:shapes"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                Iconify
+              </div>
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:palette"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                Chroma.js
+              </div>
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:move"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                Sortable.js
+              </div>
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:sliders-horizontal"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                noUiSlider
+              </div>
+              <div
+                class="flex items-center gap-3 p-3 rounded-xl"
+                style="background: var(--ui-bg)"
+              >
+                <iconify-icon
+                  icon="lucide:type"
+                  width="20"
+                  style="color: var(--accent)"
+                ></iconify-icon>
+                Google Fonts
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center gap-2 mt-6 pt-4 border-t"
+              style="border-color: var(--ui-border); color: var(--ui-text)"
+            >
+              <iconify-icon
+                icon="lucide:heart"
+                width="16"
+                style="color: var(--accent)"
+              ></iconify-icon>
+              <span data-i18n="madeBy"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/main.js"></script>
+  </body>
+</html>
