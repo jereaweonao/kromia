@@ -1,4 +1,5 @@
 let lang = 'es';
+let colorNamesDB, i18n;
 const t = (k) => i18n[lang][k] || k;
 
 // --- ESTADO Y COLORES ---
@@ -577,24 +578,32 @@ document.addEventListener('click', e => {
 });
 
 // --- INIT ---
-if (!initFromURL()) palette = Array.from({ length: 5 }, () => genColor('random', randomHue()));
-buildPalette();
-applyTranslations();
+(async () => {
+  const [colorsRes, translationsRes] = await Promise.all([
+    fetch('./json/colors.json'),
+    fetch('./json/translations.json')
+  ]);
+  colorNamesDB = await colorsRes.json();
+  i18n = await translationsRes.json();
 
-// Sortable.js
-Sortable.create($('#palette'), {
-  animation: 150,
-  ghostClass: 'sortable-ghost',
-  filter: function(evt) {
-    return evt.target.closest('.no-drag') !== null;
-  },
-  preventOnFilter: false,
-  touchStartThreshold: 10,
-  onEnd: function(evt) {
-    const movedItem = palette.splice(evt.oldIndex, 1)[0];
-    palette.splice(evt.newIndex, 0, movedItem);
-    buildPalette(true);
-    updateURL();
-  }
-});
+  if (!initFromURL()) palette = Array.from({ length: 5 }, () => genColor('random', randomHue()));
+  buildPalette();
+  applyTranslations();
+
+  Sortable.create($('#palette'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    filter: function(evt) {
+      return evt.target.closest('.no-drag') !== null;
+    },
+    preventOnFilter: false,
+    touchStartThreshold: 10,
+    onEnd: function(evt) {
+      const movedItem = palette.splice(evt.oldIndex, 1)[0];
+      palette.splice(evt.newIndex, 0, movedItem);
+      buildPalette(true);
+      updateURL();
+    }
+  });
+})();
 
