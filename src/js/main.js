@@ -10,16 +10,6 @@ let currentMode = 'random';
 function getHex(c) { return chroma(c.h, c.s, c.l, 'hsl').hex().toUpperCase(); }
 function getContrast(c) { return chroma.contrast(getHex(c), '#000') > 4.5 ? '#000000' : '#FFFFFF'; }
 
-function getColorName(c) {
-  const hex = getHex(c);
-  let minDist = Infinity;
-  let closestName = 'Color';
-  colorNamesDB[lang].forEach(entry => {
-    const dist = chroma.distance(hex, entry.hex);
-    if (dist < minDist) { minDist = dist; closestName = entry.name; }
-  });
-  return closestName;
-}
 
 // --- ALGORITMOS DE PALETAS COHERENTES ---
 function randomHue() { return Math.floor(Math.random() * 360) }
@@ -100,6 +90,10 @@ function addColor() {
     el.style.opacity = '1';
     el.style.transform = 'scale(1)';
   });
+
+  // quitar add-btn del penúltimo strip.
+  let addBtn = document.querySelector(`.color-strip[data-index="${i - 1}"] .btn-overlay .btn-add`);
+  addBtn.remove();
 }
 
 function removeColor(i) {
@@ -230,7 +224,6 @@ function updateSingleStripUI(i) {
     if (hexSpan && hexSpan.contentEditable !== "true") {
       hexSpan.textContent = hex;
     }
-    document.getElementById(`name-${i}`).textContent = getColorName(c);
     document.getElementById(`licon-${i}`).setAttribute('icon', c.locked ? 'lucide:lock' : 'lucide:lock-open');
   }
 }
@@ -579,11 +572,9 @@ document.addEventListener('click', e => {
 
 // --- INIT ---
 (async () => {
-  const [colorsRes, translationsRes] = await Promise.all([
-    fetch('./json/colors.json'),
+  const [translationsRes] = await Promise.all([
     fetch('./json/translations.json')
   ]);
-  colorNamesDB = await colorsRes.json();
   i18n = await translationsRes.json();
 
   if (!initFromURL()) palette = Array.from({ length: 5 }, () => genColor('random', randomHue()));
